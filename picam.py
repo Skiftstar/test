@@ -8,7 +8,7 @@ cv2.startWindowThread()
 
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
-picam2.video_configuration.controls.FrameRate = 120.0
+picam2.set_controls({"FrameRate": 120})
 picam2.start()
 
 while True:
