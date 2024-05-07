@@ -4,7 +4,6 @@ from picamera2 import Picamera2
 
 # Grab images as numpy arrays and leave everything else to OpenCV.
 
-face_detector = cv2.CascadeClassifier("/usr/share/opencv4/haarcascades/haarcascade_frontalface_default.xml")
 cv2.startWindowThread()
 
 picam2 = Picamera2()
@@ -15,7 +14,7 @@ while True:
     im = picam2.capture_array()
 
     grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    faces = face_detector.detectMultiScale(grey, 1.1, 5)
+    faces = (0, 0, 100, 100)
 
     for (x, y, w, h) in faces:
         cv2.rectangle(im, (x, y), (x + w, y + h), (0, 255, 0))
