@@ -1,37 +1,24 @@
 import cv2
-from picamera2 import PiCamera
-from picamera2.array import PiRGBArray
-import time
 
-# Create a PiCamera object
-camera = PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 32
+from picamera2 import Picamera2
 
-# Create a PiRGBArray object
-raw_capture = PiRGBArray(camera, size=(640, 480))
+# Grab images as numpy arrays and leave everything else to OpenCV.
 
-# Allow the camera to warm up
-time.sleep(0.1)
+face_detector = cv2.CascadeClassifier("/usr/share/opencv4/haarcascades/haarcascade_frontalface_default.xml")
+cv2.startWindowThread()
 
-# Capture frames from the camera
-for frame in camera.capture_continuous(raw_capture, format="bgr", use_video_port=True):
-    # Grab the raw NumPy array representing the image
-    image = frame.array
+picam2 = Picamera2()
+picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
+picam2.start()
 
-    # Process the image using OpenCV (for example, convert it to grayscale)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    
-    # Display the resulting frame
-    cv2.imshow("Frame", gray)
-    
-    # Wait for key press and check if 'q' is pressed
-    key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):
-        break
-    
-    # Clear the stream in preparation for the next frame
-    raw_capture.truncate(0)
+while True:
+    im = picam2.capture_array()
 
-# Close OpenCV windows
-cv2.destroyAllWindows()
+    grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    faces = face_detector.detectMultiScale(grey, 1.1, 5)
+
+    for (x, y, w, h) in faces:
+        cv2.rectangle(im, (x, y), (x + w, y + h), (0, 255, 0))
+
+    cv2.imshow("Camera", im)
+    cv2.waitKey(1)
