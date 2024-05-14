@@ -51,8 +51,8 @@ def processFrame(frame, sliders):
         filteredFrame=frame, 
         boundaries=[(lowerBoundary, upperBoundary, puckMinRadius, puckMaxRadius), (robotLowerBoundary, robotUpperBoundary, robotMinRadius, robotMaxRadius)], 
         resizeFrame=resizeFrame,
-        useBlur=True,
-        useUMat=True,
+        useBlur=False,
+        useUMat=False,
         detectRobot=lastRobotDetection == 0
     )
 
