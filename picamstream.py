@@ -10,11 +10,9 @@ picam2.start()
 
 def generate_frames():
     while True:
-        im = picam2.capture_array()
-        ret, jpeg = cv2.imencode('.jpg', im)
-        frame = jpeg.tobytes()
+        frame = picam2.capture_array()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n')
 
 @app.route('/video_feed')
 def video_feed():
