@@ -1,3 +1,4 @@
+import cv2
 from flask import Flask, Response
 from picamera2 import Picamera2
 
@@ -10,9 +11,13 @@ picam2.start()
 
 def generate_frames():
     while True:
-        frame = picam2.capture_array()
+        im = picam2.capture_array()
+        grey = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        cv2.rectangle(im, (0, 0), (100, 100), (0, 255, 0))
+        ret, jpeg = cv2.imencode('.jpg', im)
+        frame = jpeg.tobytes()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
 @app.route('/video_feed')
 def video_feed():
